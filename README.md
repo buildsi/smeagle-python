@@ -11,18 +11,26 @@ $ python -m venv env
 $ source env/bin/activate
 ```
 
+Compile the example
+
+```bash
+cd example
+make
+```
+
 Then you can run Smeagle Python pointing at a binary.
 
 ```bash
-$ python smeagle.py libtest.so
+$ python smeagle.py example/libmath-v1.so
 ```
 ```
 {
-    "library": "/home/vanessa/Desktop/Code/smeagle-python/libtest.so",
+    "library": "/home/vanessa/Desktop/Code/smeagle-python/example/libmath-v1.so",
     "locations": [
         {
             "name": "_init",
             "size": 27,
+            "direction": "unknown",
             "parameters": [
                 {
                     "type": "int",
@@ -34,6 +42,7 @@ $ python smeagle.py libtest.so
         {
             "name": "sub_401020",
             "size": 13,
+            "direction": "unknown",
             "parameters": [
                 {
                     "type": "int",
@@ -45,28 +54,7 @@ $ python smeagle.py libtest.so
         {
             "name": "sub_40102d",
             "size": 3,
-            "parameters": [
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
-        },
-        {
-            "name": "sub_401030",
-            "size": 15,
-            "parameters": [
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
-        },
-        {
-            "name": "sub_40103f",
-            "size": 1,
+            "direction": "unknown",
             "parameters": [
                 {
                     "type": "int",
@@ -77,20 +65,19 @@ $ python smeagle.py libtest.so
         },
         {
             "name": "__cxa_finalize",
-            "size": 11
-        },
-        {
-            "name": "__printf_chk",
-            "size": 11
+            "size": 11,
+            "direction": "unknown"
         },
         {
             "name": "deregister_tm_clones",
             "size": 41,
+            "direction": "unknown",
             "parameters": []
         },
         {
-            "name": "sub_401089",
+            "name": "sub_401069",
             "size": 7,
+            "direction": "unknown",
             "parameters": [
                 {
                     "type": "int",
@@ -102,6 +89,7 @@ $ python smeagle.py libtest.so
         {
             "name": "register_tm_clones",
             "size": 57,
+            "direction": "unknown",
             "parameters": [
                 {
                     "type": "int",
@@ -111,8 +99,9 @@ $ python smeagle.py libtest.so
             ]
         },
         {
-            "name": "sub_4010c9",
+            "name": "sub_4010a9",
             "size": 7,
+            "direction": "unknown",
             "parameters": [
                 {
                     "type": "int",
@@ -124,6 +113,7 @@ $ python smeagle.py libtest.so
         {
             "name": "__do_global_dtors_aux",
             "size": 54,
+            "direction": "unknown",
             "parameters": [
                 {
                     "type": "int",
@@ -133,8 +123,9 @@ $ python smeagle.py libtest.so
             ]
         },
         {
-            "name": "sub_401105",
+            "name": "sub_4010e5",
             "size": 3,
+            "direction": "unknown",
             "parameters": [
                 {
                     "type": "int",
@@ -144,8 +135,9 @@ $ python smeagle.py libtest.so
             ]
         },
         {
-            "name": "sub_401109",
+            "name": "sub_4010e9",
             "size": 7,
+            "direction": "unknown",
             "parameters": [
                 {
                     "type": "int",
@@ -157,6 +149,7 @@ $ python smeagle.py libtest.so
         {
             "name": "frame_dummy",
             "size": 9,
+            "direction": "unknown",
             "parameters": [
                 {
                     "type": "int",
@@ -166,8 +159,9 @@ $ python smeagle.py libtest.so
             ]
         },
         {
-            "name": "sub_401119",
-            "size": 7,
+            "name": "sub_4010f9",
+            "size": 1,
+            "direction": "unknown",
             "parameters": [
                 {
                     "type": "int",
@@ -177,9 +171,106 @@ $ python smeagle.py libtest.so
             ]
         },
         {
-            "name": "_Z7bigcallllllln",
-            "size": 54,
+            "name": "_ZN11MathLibrary10Arithmetic3AddEdd",
+            "size": 30,
+            "direction": "export",
             "parameters": [
+                {
+                    "type": "void *",
+                    "size": 64,
+                    "location": "rdi"
+                },
+                {
+                    "type": "double",
+                    "size": 64,
+                    "location": "xmm0"
+                },
+                {
+                    "type": "double",
+                    "size": 64,
+                    "location": "xmm1"
+                },
+                {
+                    "type": "int",
+                    "size": 32,
+                    "location": "rax"
+                }
+            ]
+        },
+        {
+            "name": "_ZN11MathLibrary10Arithmetic8SubtractEdd",
+            "size": 30,
+            "direction": "export",
+            "parameters": [
+                {
+                    "type": "void *",
+                    "size": 64,
+                    "location": "rdi"
+                },
+                {
+                    "type": "double",
+                    "size": 64,
+                    "location": "xmm0"
+                },
+                {
+                    "type": "double",
+                    "size": 64,
+                    "location": "xmm1"
+                },
+                {
+                    "type": "int",
+                    "size": 32,
+                    "location": "rax"
+                }
+            ]
+        },
+        {
+            "name": "_ZN11MathLibrary10Arithmetic8MultiplyEdd",
+            "size": 30,
+            "direction": "export",
+            "parameters": [
+                {
+                    "type": "void *",
+                    "size": 64,
+                    "location": "rdi"
+                },
+                {
+                    "type": "double",
+                    "size": 64,
+                    "location": "xmm0"
+                },
+                {
+                    "type": "double",
+                    "size": 64,
+                    "location": "xmm1"
+                },
+                {
+                    "type": "int",
+                    "size": 32,
+                    "location": "rax"
+                }
+            ]
+        },
+        {
+            "name": "_ZN11MathLibrary10Arithmetic6DivideEdd",
+            "size": 30,
+            "direction": "export",
+            "parameters": [
+                {
+                    "type": "void *",
+                    "size": 64,
+                    "location": "rdi"
+                },
+                {
+                    "type": "double",
+                    "size": 64,
+                    "location": "xmm0"
+                },
+                {
+                    "type": "double",
+                    "size": 64,
+                    "location": "xmm1"
+                },
                 {
                     "type": "int",
                     "size": 32,
@@ -190,6 +281,7 @@ $ python smeagle.py libtest.so
         {
             "name": "_fini",
             "size": 13,
+            "direction": "unknown",
             "parameters": [
                 {
                     "type": "int",
@@ -200,8 +292,8 @@ $ python smeagle.py libtest.so
         }
     ]
 }
-
 ```
+
 Not perfect yet (I need to parse types recursively) but wow that was easy and I got
 really far in an afternoon!
 
