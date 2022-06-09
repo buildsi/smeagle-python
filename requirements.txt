@@ -1,1 +1,2 @@
+git+https://github.com/vsoch/cle.git@add/x86-parser
 angr

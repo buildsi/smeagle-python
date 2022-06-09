@@ -31,8 +31,6 @@ import re
 import json
 import sys
 import os
-import cle
-import copy
 
 
 class CustomClassIdentifier(ClassIdentifier):
@@ -76,9 +74,6 @@ class Analyzer:
         if not os.path.exists(path):
             sys.exit("%s does not exist!" % path)
 
-        # use cle to parse functions, params
-        self.data = cle.Loader(path, load_debug_info=True, auto_load_libs=False)
-
         # If we set auto_load_libs to true we also parse all linked libs!
         # Note that if we want to do this, we can look at func.owner.symbol
         self.proj = angr.Project(
@@ -86,11 +81,9 @@ class Analyzer:
             use_sim_procedures=use_sim_procedures,
             load_options={"auto_load_libs": auto_load_libs},
         )
+        self.data = {"library": os.path.abspath(path), "locations": []}
 
         # TODO self.proj.kb.callgraph is networkx, we can probably plot it
-
-    def corpus(self):
-        return self.data.corpus.to_dict()
 
     def run(self):
         """
@@ -103,10 +96,7 @@ class Analyzer:
 
         # Parse functions and variables from functions into data
         self._set_global_variables()
-
-        # Just generate an index into functions parsed by cle
         self._parse_functions()
-        self._parse_callsites()
 
     def _set_global_variables(self):
         global_variables = self.cfg.kb.variables["global"]
@@ -120,23 +110,63 @@ class Analyzer:
                     SimMemoryVariable(symbol.rebased_addr, 1, name=symbol.name),
                 )
 
-    @property
-    def libname(self):
-        return os.path.basename(self.data.corpus.library)
+    def _derive_register(self, reg):
+        """
+        If we parse a calling convention into other types, derive the underlying register.
+        """
+        # structures are represented by their elements
+        if isinstance(reg, SimStructArg):
+            return
+        return reg
+
+    def _parse_struct_param(self, typ, register):
+        """
+            Parse a structure type.
+
+            # The size is the sum of the fields (this starts at 0)
+            size = typ.size
+
+              "name":"f",
+              "type":"Foo",
+              "class":"Struct",
+              "location":"%rdi",
+              "direction":"import",
+              "size":"36",
+              "fields": [
+               {
+                 "name":"x",
+                 "type":"int",
+                 "class":"Scalar",
+                 "size":"4"
+               },           {
+                 "name":"c",
+                 "type":"char[]",
+                 "class":"Array",
+                 "size":"32"
+               }]
+            }
+        ]
+        """
+        entry = {"type": typ.name, "class": "Struct"}
+
+    def _parse_param(self, typ, register=None, exported="unknown"):
+        """
+        Parse a parameter (type) based on specific type
+        """
+        if isinstance(typ, SimStruct):
+            return self._parse_struct_param(typ, register)
+        param = {"type": typ.c_repr(), "size": typ.size, "exported": exported}
+        if register:
+            param["location"] = register
+        return param
 
     def _parse_functions(self):
-        self.funcs = {}
-        for func in self.data.corpus.functions:
-
-            # Must be named symbol
-            if "name" not in func:
-                continue
-            self.funcs[func["name"]] = func
-
-    def _parse_callsites(self):
+        """
+        Iterate through the knowledge base functions to derive metadata!
+        """
         if not self.cfg:
             sys.exit("You should not run this function directly - use run.")
-        print("Parsing callsites...")
+        print("Parsing functions...")
 
         # prepare a state
         # state = self.proj.factory.entry_state()
@@ -151,19 +181,23 @@ class Analyzer:
             if func.is_simprocedure:
                 continue
 
+            print(func)
+            import IPython
+
+            IPython.embed()
             # Only parse those owned by our library
-            if func.symbol and self.libname != os.path.basename(
-                func.symbol.owner.binary
-            ):
+            if func.symbol and self.data["library"] != func.symbol.owner.binary:
                 continue
-            if func.name not in self.funcs:
-                continue      
+
             exported = "unknown"
             if func.symbol and func.symbol.is_export:
                 exported = "export"
             elif func.symbol and func.symbol.is_import:
                 exported = "import"
-            self.funcs[func.name]["direction"] = exported
+
+            # This looks like it matches func.symbol.name
+            # We can do additional filter here based on symbol params if needed
+            entry = {"name": func.name, "size": func.size, "direction": exported}
 
             # Run the calling convention analysis (this has arch and registers)
             # We get back a SimCC to give us detailed information about how a function's parameters should be laid out in registers and memory.
@@ -172,15 +206,57 @@ class Analyzer:
                 func, cfg=self.cfg, analyze_callsites=True
             )
 
-            callsite_facts = convention._analyze_callsites(max_analyzing_callsites=3)
-            if callsite_facts:
-                calling_func = copy.deepcopy(self.funcs[func.name])
-                for fact in callsite_facts:
-                    for i, arg in enumerate(fact.args):
-                        calling_func["parameters"][i]["location"] = "%" + str(
-                            arg.reg_name
+            # Then variable recovery
+            vr = self.proj.analyses.VariableRecoveryFast(func)
+
+            # And type inference
+            types = self.proj.analyses.Typehoon(vr.type_constraints)
+
+            # Some calls don't have prototype so we skip?
+            if not convention.prototype:
+                self.data["locations"].append({"function": entry})
+                continue
+
+            # Do variable recovery on the function
+            variable_manager = vr.variable_manager[func.addr]
+
+            entry["parameters"] = []
+
+            # angr does not parse float types yet
+            param = None
+            params = convention.cc.arg_locs(convention.prototype)
+            if not params:
+                parsed = parse_cpp_file(func.demangled_name, with_param_names=True)
+                if parsed[0]:
+                    key = list(parsed[0].keys())[0]
+                    proto = parsed[0][key]
+
+                    # This can also return SimStructArgs
+                    regs = func.calling_convention.arg_locs(proto)
+                    for i, typ in enumerate(parsed[0][key].args):
+                        register = self._derive_register(regs[i])
+                        typ = typ.with_arch(convention.cc.arch)
+                        entry["parameters"].append(
+                            self._parse_param(typ, register, exported)
                         )
-                self.data.corpus.callsites.append(calling_func)
+
+            else:
+                for i, register in enumerate(params):
+                    typ = convention.prototype.args[i]
+                    typ = typ.with_arch(convention.cc.arch)
+                    entry["parameters"].append(
+                        self._parse_param(typ, register.reg_name, exported)
+                    )
+
+            # If we have a return type, add it
+            if convention.prototype.returnty:
+                returnt = convention.prototype.returnty.with_arch(self.proj.arch)
+                entry["parameters"].append(
+                    {"type": returnt.c_repr(), "size": returnt.size, "location": "rax"}
+                )
+
+            # TODO some method to determine we've seen something?
+            self.data["locations"].append({"function": entry})
 
 
 def main():
@@ -189,7 +265,7 @@ def main():
     args, extra = parser.parse_known_args()
     a = Analyzer(args.binary)
     a.run()
-    print(a.data.corpus.to_json())
+    print(json.dumps(a.data, indent=4))
 
 
 if __name__ == "__main__":
