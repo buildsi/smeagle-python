@@ -2,6 +2,8 @@
 
 Trying to write a Smeagle equivalent tool in Python using [angr](https://github.com/angr/angr)!
 
+**Note** This repository is deprecated, and you should use [https://github.com/buildsi/smeagle-py](https://github.com/buildsi/smeagle-py) instead. However note that they use different approaches to achieve "the same" thing, so you can inspect and decide for yourself.
+
 ## Usage
 
 First create a virtual environment and install dependencies.
