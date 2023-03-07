@@ -12,6 +12,20 @@ First create a virtual environment and install dependencies.
 $ python -m venv env
 $ source env/bin/activate
 ```
+We need to install pyelftools from it's repo
+
+```bash
+pip install git+https://github.com/eliben/pyelftools
+```
+
+We need Vanessa's branch of cle and angr:
+
+```bash
+pip install angr
+pip install --updgrade pip
+pip install git+https://github.com/vsoch/cle.git@add/x86-parser-june
+pip install packaging
+```
 
 Compile the example
 
@@ -30,275 +44,234 @@ $ python smeagle.py example/libmath-v1.so
     "library": "/home/vanessa/Desktop/Code/smeagle-python/example/libmath-v1.so",
     "locations": [
         {
-            "name": "_init",
-            "size": 27,
-            "direction": "unknown",
-            "parameters": [
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
+            "variables": []
         },
         {
-            "name": "sub_401020",
-            "size": 13,
-            "direction": "unknown",
-            "parameters": [
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
-        },
-        {
-            "name": "sub_40102d",
-            "size": 3,
-            "direction": "unknown",
-            "parameters": [
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
-        },
-        {
-            "name": "__cxa_finalize",
-            "size": 11,
-            "direction": "unknown"
-        },
-        {
-            "name": "deregister_tm_clones",
-            "size": 41,
-            "direction": "unknown",
-            "parameters": []
-        },
-        {
-            "name": "sub_401069",
-            "size": 7,
-            "direction": "unknown",
-            "parameters": [
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
-        },
-        {
-            "name": "register_tm_clones",
-            "size": 57,
-            "direction": "unknown",
-            "parameters": [
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
-        },
-        {
-            "name": "sub_4010a9",
-            "size": 7,
-            "direction": "unknown",
-            "parameters": [
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
-        },
-        {
-            "name": "__do_global_dtors_aux",
-            "size": 54,
-            "direction": "unknown",
-            "parameters": [
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
-        },
-        {
-            "name": "sub_4010e5",
-            "size": 3,
-            "direction": "unknown",
-            "parameters": [
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
-        },
-        {
-            "name": "sub_4010e9",
-            "size": 7,
-            "direction": "unknown",
-            "parameters": [
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
-        },
-        {
-            "name": "frame_dummy",
-            "size": 9,
-            "direction": "unknown",
-            "parameters": [
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
-        },
-        {
-            "name": "sub_4010f9",
-            "size": 1,
-            "direction": "unknown",
-            "parameters": [
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
-        },
-        {
-            "name": "_ZN11MathLibrary10Arithmetic3AddEdd",
-            "size": 30,
-            "direction": "export",
-            "parameters": [
-                {
-                    "type": "void *",
-                    "size": 64,
-                    "location": "rdi"
-                },
-                {
+            "function": {
+                "name": "_ZN11MathLibrary10Arithmetic3AddEdd",
+                "parameters": [
+                    {
+                        "size": 8,
+                        "type": "double",
+                        "class": "Float",
+                        "location": "%xmm0"
+                    },
+                    {
+                        "size": 8,
+                        "type": "double",
+                        "class": "Float",
+                        "location": "%xmm1"
+                    }
+                ],
+                "return": {
                     "type": "double",
-                    "size": 64,
-                    "location": "xmm0"
+                    "size": 8,
+                    "class": "Float",
+                    "location": "%xmm0"
                 },
-                {
-                    "type": "double",
-                    "size": 64,
-                    "location": "xmm1"
-                },
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
+                "direction": "export"
+            }
         },
         {
-            "name": "_ZN11MathLibrary10Arithmetic8SubtractEdd",
-            "size": 30,
-            "direction": "export",
-            "parameters": [
-                {
-                    "type": "void *",
-                    "size": 64,
-                    "location": "rdi"
-                },
-                {
+            "function": {
+                "name": "_ZN11MathLibrary10Arithmetic8SubtractEdd",
+                "parameters": [
+                    {
+                        "size": 8,
+                        "type": "double",
+                        "class": "Float",
+                        "location": "%xmm0"
+                    },
+                    {
+                        "size": 8,
+                        "type": "double",
+                        "class": "Float",
+                        "location": "%xmm1"
+                    }
+                ],
+                "return": {
                     "type": "double",
-                    "size": 64,
-                    "location": "xmm0"
+                    "size": 8,
+                    "class": "Float",
+                    "location": "%xmm0"
                 },
-                {
-                    "type": "double",
-                    "size": 64,
-                    "location": "xmm1"
-                },
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
+                "direction": "export"
+            }
         },
         {
-            "name": "_ZN11MathLibrary10Arithmetic8MultiplyEdd",
-            "size": 30,
-            "direction": "export",
-            "parameters": [
-                {
-                    "type": "void *",
-                    "size": 64,
-                    "location": "rdi"
-                },
-                {
+            "function": {
+                "name": "_ZN11MathLibrary10Arithmetic8MultiplyEdd",
+                "parameters": [
+                    {
+                        "size": 8,
+                        "type": "double",
+                        "class": "Float",
+                        "location": "%xmm0"
+                    },
+                    {
+                        "size": 8,
+                        "type": "double",
+                        "class": "Float",
+                        "location": "%xmm1"
+                    }
+                ],
+                "return": {
                     "type": "double",
-                    "size": 64,
-                    "location": "xmm0"
+                    "size": 8,
+                    "class": "Float",
+                    "location": "%xmm0"
                 },
-                {
-                    "type": "double",
-                    "size": 64,
-                    "location": "xmm1"
-                },
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
+                "direction": "export"
+            }
         },
         {
-            "name": "_ZN11MathLibrary10Arithmetic6DivideEdd",
-            "size": 30,
-            "direction": "export",
-            "parameters": [
-                {
-                    "type": "void *",
-                    "size": 64,
-                    "location": "rdi"
-                },
-                {
+            "function": {
+                "name": "_ZN11MathLibrary10Arithmetic6DivideEdd",
+                "parameters": [
+                    {
+                        "size": 8,
+                        "type": "double",
+                        "class": "Float",
+                        "location": "%xmm0"
+                    },
+                    {
+                        "size": 8,
+                        "type": "double",
+                        "class": "Float",
+                        "location": "%xmm1"
+                    }
+                ],
+                "return": {
                     "type": "double",
-                    "size": 64,
-                    "location": "xmm0"
+                    "size": 8,
+                    "class": "Float",
+                    "location": "%xmm0"
                 },
-                {
-                    "type": "double",
-                    "size": 64,
-                    "location": "xmm1"
-                },
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
-        },
-        {
-            "name": "_fini",
-            "size": 13,
-            "direction": "unknown",
-            "parameters": [
-                {
-                    "type": "int",
-                    "size": 32,
-                    "location": "rax"
-                }
-            ]
+                "direction": "export"
+            }
         }
     ]
 }
 ```
 
-Not perfect yet (I need to parse types recursively) but wow that was easy and I got
-really far in an afternoon!
+We have basic callsite parsing from angr:
 
+```bash
+$ python smeagle.py ../cle/examples/callsite/lib.so 
+{
+    "library": "/home/vanessa/Desktop/Code/cle/examples/callsite/lib.so",
+    "locations": [
+        {
+            "variables": []
+        },
+        {
+            "function": {
+                "name": "_Z5startd",
+                "parameters": [
+                    {
+                        "size": 8,
+                        "name": "d",
+                        "type": "double",
+                        "class": "Float",
+                        "location": "%xmm0"
+                    }
+                ],
+                "return": {
+                    "type": "int",
+                    "size": 4,
+                    "class": "Integer",
+                    "location": "%rax"
+                },
+                "direction": "export"
+            }
+        },
+        {
+            "function": {
+                "name": "_Z3bard",
+                "parameters": [
+                    {
+                        "size": 8,
+                        "name": "d",
+                        "type": "double",
+                        "class": "Float",
+                        "location": "%xmm0"
+                    }
+                ],
+                "return": {
+                    "type": "double",
+                    "size": 8,
+                    "class": "Float",
+                    "location": "%xmm0"
+                },
+                "direction": "export"
+            }
+        },
+        {
+            "function": {
+                "name": "_Z3fooi",
+                "parameters": [
+                    {
+                        "size": 4,
+                        "name": "x",
+                        "type": "int",
+                        "class": "Integer",
+                        "location": "%rdi"
+                    }
+                ],
+                "return": {
+                    "type": "int",
+                    "size": 4,
+                    "class": "Integer",
+                    "location": "%rax"
+                },
+                "direction": "export"
+            }
+        },
+        {
+            "callsite": {
+                "name": "_Z3fooi",
+                "parameters": [
+                    {
+                        "size": 4,
+                        "name": "x",
+                        "type": "int",
+                        "class": "Integer",
+                        "location": "%rdi"
+                    }
+                ],
+                "return": {
+                    "type": "int",
+                    "size": 4,
+                    "class": "Integer",
+                    "location": "%rax"
+                },
+                "direction": "export"
+            }
+        },
+        {
+            "callsite": {
+                "name": "_Z3bard",
+                "parameters": [
+                    {
+                        "size": 8,
+                        "name": "d",
+                        "type": "double",
+                        "class": "Float",
+                        "location": "%xmm0"
+                    }
+                ],
+                "return": {
+                    "type": "double",
+                    "size": 8,
+                    "class": "Float",
+                    "location": "%xmm0"
+                },
+                "direction": "export"
+            }
+        }
+    ]
+}
+```
 
 ### License
 
